@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "405006563847",
+    "firebase_url": "https://safe-trip-8ada8-default-rtdb.firebaseio.com",
+    "project_id": "safe-trip-8ada8",
+    "storage_bucket": "safe-trip-8ada8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405006563847:android:d907982d4fff3c3fdc88a2",
+        "android_client_info": {
+          "package_name": "com.safeTrip.safe_trip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrxpEU7p3LulE8MKVlMEB2Su0gS2Ad7qw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

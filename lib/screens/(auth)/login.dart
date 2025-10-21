@@ -16,8 +16,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void onSubmit() {
    final email = _emailController.text.trim().toLowerCase();

@@ -1,0 +1,26 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '13.0'
+
+# CocoaPods analytics sends network stats asynchronously
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+# Load the Flutter engine and plugins
+require_relative '../flutter_export_environment'
+require_relative '../.flutter-plugins'
+require_relative '../.flutter-plugins-dependencies'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_installation
+  use_frameworks!
+  use_modular_headers!
+  flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
+end
+
+target 'Runner' do
+  flutter_installation
+end

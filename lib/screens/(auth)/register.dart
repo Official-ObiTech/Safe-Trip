@@ -1,13 +1,17 @@
 
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:safe_trip/screens/(auth)/login.dart';
+import 'package:safe_trip/widget/(custom)/loading_dialog.dart';
 import 'package:safe_trip/widget/(custom)/text_field.dart';
 import '/widget/(validators)/name.dart';
 import '/widget/(validators)/email.dart';
 import '/widget/(validators)/password.dart';
 import '/widget/(validators)/phone.dart';
 import '/widget/(custom)/toast.dart';
+import '/screens/home.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -19,11 +23,11 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   // TextEditingController _confirmPasswordController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   void onSubmit() {
     final name = _nameController.text.trim();
@@ -35,15 +39,58 @@ class _RegisterState extends State<Register> {
     if(name.isEmpty || email.isEmpty || password.isEmpty  || phone.isEmpty){
       displayToast("Please make sure to fill in all fields", context);
     }else if (!isValidName(name)){
-      displayToast("Please enter a valid name", context);
+      displayToast("Name charater should be greter then 3", context);
     }else if (!isValidEmail(email)){
       displayToast("Please enter a valid email", context);
     }else if (!isValidPassword(password)){
       displayToast("Password must be at least 6 characters", context);
     }else if (!isValidPhone(phone)){
-      displayToast("Please enter a valid phone number", context);
+      displayToast("Phone number should be greter then 11 or less then 11", context);
     }else{
-      
+      createAccount();
+    }
+  }
+
+  void createAccount() async {
+    try{
+
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) => LoadingDialog(),
+      );
+
+    final User? fbUser = (await FirebaseAuth.instance.createUserWithEmailAndPassword(
+
+      email: _emailController.text.trim().toLowerCase(), 
+      password: _passwordController.text.trim(),
+    ).catchError((onError){
+
+      displayToast(onError.toString(), context);
+      Navigator.pop(context);
+
+      return onError;
+    })).user;
+
+    Map userData = {
+      "name": _nameController.text.trim(),
+      "email": _emailController.text.trim().toLowerCase(),
+      "password": _passwordController.text.trim(),
+      "phone": _phoneController.text.trim(),
+      "uid": fbUser!.uid,
+    };
+
+    FirebaseDatabase.instance.ref("users").child(fbUser.uid).set(userData);
+    displayToast("You have successfully registered", context);
+
+    FirebaseAuth.instance.signOut();
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+
+    } on FirebaseAuthException catch(e) {
+      displayToast(e.toString(), context);
+
+      FirebaseAuth.instance.signOut();
+      Navigator.pop(context);
     }
   }
 
@@ -109,9 +156,9 @@ class _RegisterState extends State<Register> {
 
                   SizedBox(height: 18),
 
-                  Container(
+                  SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(onPressed: (){}, child: Text("Register"))),
+                    child: ElevatedButton(onPressed: onSubmit, child: Text("Register"))),
               ],
             ),
           ),

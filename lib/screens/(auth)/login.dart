@@ -1,9 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:safe_trip/widget/(custom)/loading_dialog.dart';
 import 'package:safe_trip/widget/(custom)/toast.dart';
 import 'package:safe_trip/widget/(validators)/password.dart';
 import '/widget/(custom)/text_field.dart';
 import 'package:safe_trip/screens/(auth)/register.dart';
 import '/widget/(validators)/email.dart';
+import '/screens/home.dart';
+import '/widget/(user)/info.dart';
+
+
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -30,7 +37,55 @@ class _LoginState extends State<Login> {
     }else if (!isValidPassword(password)){
       displayToast("Password must be at least 6 characters", context);
     }else{
-      
+      login();
+    }
+  }
+
+  void login() async {
+
+    try{
+
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) => LoadingDialog() 
+      );
+
+    final User? fbUser  = ( await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim().toLowerCase(), 
+        password: _passwordController.text.trim()
+      ).catchError((onError){
+
+        displayToast(onError.toString(), context);
+        Navigator.pop(context);
+        return onError;
+
+      })).user;
+
+      DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users").child(fbUser!.uid);
+      await userRef.once().then((onValue){
+        if(onValue.snapshot.value != null){
+
+          userName = (onValue.snapshot.value as Map)["name"];
+          userPhone = (onValue.snapshot.value as Map)["phone"];
+          userEmail = (onValue.snapshot.value as Map)["email"];
+
+          displayToast("You have successfully logged in successfully", context);
+
+           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Home(),
+      ));
+
+        }else {
+          displayToast("Record not found!", context);
+        }
+      });
+     
+
+    } on FirebaseAuthException catch(e) {
+
+      displayToast(e.toString(), context);
+      FirebaseAuth.instance.signOut();
+      Navigator.pop(context);
+
     }
   }
   

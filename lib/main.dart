@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:safe_trip/screens/(auth)/register.dart';
+import 'package:safe_trip/screens/home.dart';
 import 'package:safe_trip/widget/(firebase)/options.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       
       theme: CustomTheme.theme(),
-      home: Register(),
+      home: Home(),
     );
   }
 }
